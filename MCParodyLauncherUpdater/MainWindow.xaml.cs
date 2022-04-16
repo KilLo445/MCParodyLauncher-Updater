@@ -17,6 +17,8 @@ namespace MCParodyLauncherUpdater
     public partial class MainWindow : Window
     {
         private string rootPath;
+        private string tempPath;
+        private string mcplTempPath;
         private string versionFile;
         private string installerZip;
         private string installerDir;
@@ -48,10 +50,12 @@ namespace MCParodyLauncherUpdater
             InitializeComponent();
 
             rootPath = Directory.GetCurrentDirectory();
+            tempPath = Path.GetTempPath();
+            mcplTempPath = Path.Combine(tempPath, "MCParodyLauncher");
             versionFile = Path.Combine(rootPath, "version.txt");
-            installerZip = Path.Combine(rootPath, "installer.zip");
-            installerDir = Path.Combine(rootPath, "installer");
-            installer = Path.Combine(rootPath, "installer", "MCParodyLauncherSetup.exe");
+            installerZip = Path.Combine(tempPath, "MCParodyLauncher", "installer.zip");
+            installerDir = Path.Combine(tempPath, "MCParodyLauncher", "installer");
+            installer = Path.Combine(tempPath, "MCParodyLauncher", "installer", "MCParodyLauncherSetup.exe");
 
             Status = UpdaterStatus.ready;
 
@@ -62,6 +66,10 @@ namespace MCParodyLauncherUpdater
             if (Directory.Exists(installerDir))
             {
                 Directory.Delete(installerDir);
+            }
+            if (Directory.Exists(mcplTempPath))
+            {
+                Directory.Delete(mcplTempPath);
             }
         }
         private void CheckForUpdates()
@@ -100,6 +108,8 @@ namespace MCParodyLauncherUpdater
         private void InstallUpdate(bool isUpdate, Version _onlineVersion)
         {
             Status = UpdaterStatus.downloading;
+
+            Directory.CreateDirectory(mcplTempPath);
 
             WebClient webClient = new WebClient();
 
