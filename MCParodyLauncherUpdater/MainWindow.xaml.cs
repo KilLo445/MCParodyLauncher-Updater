@@ -82,7 +82,7 @@ namespace MCParodyLauncherUpdater
                 try
                 {
                     WebClient webClient = new WebClient();
-                    Version onlineVersion = new Version(webClient.DownloadString("https://drive.google.com/uc?export=download&id=1rxN417kyFzZoGmRN1arAx9prpX2pAZPY"));
+                    Version onlineVersion = new Version(webClient.DownloadString("https://raw.githubusercontent.com/KilLo445/mcpl-files/main/Launcher/version.txt"));
 
                     if (onlineVersion.IsDifferentThan(localVersion))
                     {
@@ -116,7 +116,7 @@ namespace MCParodyLauncherUpdater
             webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompletedCallback);
 
-            webClient.DownloadFileAsync(new Uri("https://drive.google.com/uc?export=download&id=1HJiH0BT6pemGLwHAzG-52Cf2lEXB8jZ5"), installerZip);
+            webClient.DownloadFileAsync(new Uri("https://github.com/KilLo445/MCParodyLauncher/releases/download/main/MinecraftParodyLauncher.zip"), installerZip);
         }
 
         private void Window_ContentRendered(object sender, EventArgs e)
