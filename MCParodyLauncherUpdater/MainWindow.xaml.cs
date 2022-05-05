@@ -6,13 +6,16 @@ using System.IO.Compression;
 using System.Media;
 using System.Net;
 using System.Windows;
+using System.Windows.Input;
 
 namespace MCParodyLauncherUpdater
 {
     enum UpdaterStatus
     {
-        ready,
+        checking,
+        noUpdate,
         downloading,
+        done
     }
     public partial class MainWindow : Window
     {
@@ -34,11 +37,17 @@ namespace MCParodyLauncherUpdater
                 _status = value;
                 switch (_status)
                 {
-                    case UpdaterStatus.ready:
-                        UpdaterStatusText.Text = "Ready";
+                    case UpdaterStatus.checking:
+                        UpdaterStatusText.Text = "Checking for updates";
+                        break;
+                    case UpdaterStatus.noUpdate:
+                        UpdaterStatusText.Text = "Checking for updates";
                         break;
                     case UpdaterStatus.downloading:
                         UpdaterStatusText.Text = "Downloading";
+                        break;
+                    case UpdaterStatus.done:
+                        UpdaterStatusText.Text = "Download complete!";
                         break;
                 }
             }
@@ -56,24 +65,34 @@ namespace MCParodyLauncherUpdater
             installerZip = Path.Combine(tempPath, "MCParodyLauncher", "installer.zip");
             installerDir = Path.Combine(tempPath, "MCParodyLauncher", "installer");
             installer = Path.Combine(tempPath, "MCParodyLauncher", "installer", "MCParodyLauncherSetup.exe");
-
-            Status = UpdaterStatus.ready;
-
+        }
+        private void DelTemp()
+        {
+            if (Directory.Exists(installerDir))
+            {
+                Directory.Delete(installerDir, true);
+            }
+            if (Directory.Exists(mcplTempPath))
+            {
+                Directory.Delete(mcplTempPath, true);
+            }
+        }
+        private void DelInstaller()
+        {
             if (File.Exists(installer))
             {
                 File.Delete(installer);
             }
-            if (Directory.Exists(installerDir))
-            {
-                Directory.Delete(installerDir);
-            }
-            if (Directory.Exists(mcplTempPath))
-            {
-                Directory.Delete(mcplTempPath);
-            }
+        }
+        private void CreateTemp()
+        {
+            Directory.CreateDirectory(mcplTempPath);
+            Directory.CreateDirectory(installerDir);
         }
         private void CheckForUpdates()
         {
+            Status = UpdaterStatus.checking;
+
             if (File.Exists(versionFile))
             {
                 Version localVersion = new Version(File.ReadAllText(versionFile));
@@ -90,6 +109,7 @@ namespace MCParodyLauncherUpdater
                     }
                     else
                     {
+                        Status = UpdaterStatus.noUpdate;
                         SystemSounds.Exclamation.Play();
                         MessageBox.Show("No update is available.");
                         Close();
@@ -109,7 +129,8 @@ namespace MCParodyLauncherUpdater
         {
             Status = UpdaterStatus.downloading;
 
-            Directory.CreateDirectory(mcplTempPath);
+            DelInstaller();
+            CreateTemp();
 
             WebClient webClient = new WebClient();
 
@@ -121,6 +142,7 @@ namespace MCParodyLauncherUpdater
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
+            Status = UpdaterStatus.checking;
             CheckForUpdates();
         }
         private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
@@ -131,8 +153,8 @@ namespace MCParodyLauncherUpdater
         {
             ZipFile.ExtractToDirectory(installerZip, installerDir);
             File.Delete(installerZip);
+            Status = UpdaterStatus.done;
             Process.Start(installer);
-            Status = UpdaterStatus.ready;
             Close();
         }
         protected override void OnClosing(CancelEventArgs e)
@@ -141,7 +163,7 @@ namespace MCParodyLauncherUpdater
             {
                 e.Cancel = true;
             }
-            if (Status == UpdaterStatus.ready)
+            else
             {
 
             }
@@ -202,6 +224,14 @@ namespace MCParodyLauncherUpdater
             public override string ToString()
             {
                 return $"{major}.{minor}.{subMinor}";
+            }
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
             }
         }
     }

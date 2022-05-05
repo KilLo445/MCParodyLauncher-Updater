@@ -6,12 +6,29 @@
         xmlns:local="clr-namespace:MCParodyLauncherUpdater"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize"
+        ResizeMode="NoResize"
         ContentRendered="Window_ContentRendered"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None"
+        MouseDown="Window_MouseDown"
         Title="Updater" Height="100" Width="450">
     <Grid>
-        <ProgressBar Name="DLProgress" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0" Width="400" Height="30"/>
-        <TextBlock Name="UpdaterStatusText" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
-        <TextBlock Name="VersionText" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="20" Foreground="White" Margin="0, 0, 5, 0" Visibility="Hidden"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border CornerRadius="20" Grid.RowSpan="2">
+            <Border.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="#1c1c1c" Offset="0.0"/>
+                    <GradientStop Color="#242424" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+        <ProgressBar Name="DLProgress" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" Height="30" Grid.Row="1" Margin="0,-20,0,0"/>
+        <TextBlock Name="UpdaterStatusText" Text="Checking for updates" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Visible" FontSize="15" FontFamily="/Fonts/#Poppins" FontWeight="Light" Margin="25,20,0,0"/>
+        <TextBlock Name="VersionText" Text="Updater v2.0" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Hidden" FontSize="15" FontFamily="/Fonts/#Poppins" FontWeight="Light" Margin="25,20,25,0"/>
     </Grid>
 </Window>
