@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Media;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
@@ -41,7 +40,7 @@ namespace MCParodyLauncherUpdater
                         UpdaterStatusText.Text = "Checking for updates";
                         break;
                     case UpdaterStatus.noUpdate:
-                        UpdaterStatusText.Text = "Checking for updates";
+                        UpdaterStatusText.Text = "No update available";
                         break;
                     case UpdaterStatus.downloading:
                         UpdaterStatusText.Text = "Downloading";
@@ -96,7 +95,6 @@ namespace MCParodyLauncherUpdater
             if (File.Exists(versionFile))
             {
                 Version localVersion = new Version(File.ReadAllText(versionFile));
-                VersionText.Text = localVersion.ToString();
 
                 try
                 {
@@ -109,10 +107,7 @@ namespace MCParodyLauncherUpdater
                     }
                     else
                     {
-                        Status = UpdaterStatus.noUpdate;
-                        SystemSounds.Exclamation.Play();
-                        MessageBox.Show("No update is available.");
-                        Close();
+                        NoUpdate();
                     }
                 }
                 catch (Exception ex)
@@ -163,10 +158,11 @@ namespace MCParodyLauncherUpdater
             {
                 e.Cancel = true;
             }
-            else
-            {
-
-            }
+        }
+        private void NoUpdate()
+        {
+            Status = UpdaterStatus.noUpdate;
+            CloseButton.Visibility = Visibility.Visible;
         }
         struct Version
         {
@@ -233,6 +229,11 @@ namespace MCParodyLauncherUpdater
             {
                 DragMove();
             }
+        }
+
+        private void CloseButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Close();
         }
     }
 }
