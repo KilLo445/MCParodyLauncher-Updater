@@ -13,6 +13,7 @@ namespace MCParodyLauncherUpdater
     {
         checking,
         noUpdate,
+        updateFound,
         downloading,
         done
     }
@@ -41,6 +42,9 @@ namespace MCParodyLauncherUpdater
                         break;
                     case UpdaterStatus.noUpdate:
                         UpdaterStatusText.Text = "No update available";
+                        break;
+                    case UpdaterStatus.updateFound:
+                        UpdaterStatusText.Text = "Update Found";
                         break;
                     case UpdaterStatus.downloading:
                         UpdaterStatusText.Text = "Downloading";
@@ -122,6 +126,31 @@ namespace MCParodyLauncherUpdater
         }
         private void InstallUpdate(bool isUpdate, Version _onlineVersion)
         {
+            Process[] mcplProcess = Process.GetProcessesByName("MCParodyLauncher");
+            if (mcplProcess.Length != 0)
+            {
+                Status = UpdaterStatus.updateFound;
+
+                MessageBoxResult closeMCPL = MessageBox.Show("It looks like MInecraft Parody Launcher is running. Would you like to close it and update?", "Updater", MessageBoxButton.YesNo);
+                if (closeMCPL == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        mcplProcess[0].Kill();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error closing Minecraft Parody Launcher: {ex}", "Error");
+                        Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Minecraft Parody Launcher must be closed to update", "Updater");
+                    Close();
+                }
+            }
+
             Status = UpdaterStatus.downloading;
 
             DelInstaller();
