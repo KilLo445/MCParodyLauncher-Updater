@@ -30,6 +30,5 @@
         <ProgressBar Name="DLProgress" Visibility="Visible" VerticalAlignment="Top" HorizontalAlignment="Center" Width="400" Height="30" Margin="0,46,0,0" Grid.RowSpan="2"/>
         <TextBlock Name="UpdaterStatusText" Text="Checking for updates" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Width="400" TextAlignment="Left" Visibility="Visible" FontSize="15" FontFamily="/Fonts/#Poppins" FontWeight="Light" Margin="25,20,0,0"/>
         <TextBlock Name="CloseButton" Text="X" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top" TextAlignment="Center" Visibility="Hidden" FontSize="18" FontFamily="/Fonts/#Poppins" FontWeight="Light" Margin="0,18,25,0" MouseLeftButtonDown="CloseButton_MouseLeftButtonDown"/>
-        <TextBlock Name="VersionText" Text="Updater v2.3" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Hidden" FontSize="15" FontFamily="/Fonts/#Poppins" FontWeight="Light" Margin="0,20,45,0"/>
     </Grid>
 </Window>
