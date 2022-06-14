@@ -19,18 +19,15 @@ namespace MCParodyLauncherUpdater
     }
     public partial class MainWindow : Window
     {
-        string updaterVersion = "2.4.0";
+        string updaterVersion = "2.5.0";
         string rootPath;
         private string tempPath;
         private string mcplTempPath;
         private string updaterTemp;
         private string launcherVersionFile;
-        private string updaterVersionFile;
         private string installerZip;
         private string installerDir;
         private string installer;
-        private string upgrader;
-        private string pathFile;
 
         private UpdaterStatus _status;
 
@@ -68,12 +65,9 @@ namespace MCParodyLauncherUpdater
             mcplTempPath = Path.Combine(tempPath, "MCParodyLauncher");
             updaterTemp = Path.Combine(mcplTempPath, "updater");
             launcherVersionFile = Path.Combine(rootPath, "version.txt");
-            updaterVersionFile = Path.Combine(updaterTemp, "UpdaterVersion.txt");
             installerZip = Path.Combine(mcplTempPath, "installer.zip");
             installerDir = Path.Combine(mcplTempPath, "installer");
             installer = Path.Combine(mcplTempPath, "installer", "MCParodyLauncherSetup.exe");
-            upgrader = Path.Combine(updaterTemp, "upgrader.exe");
-            pathFile = Path.Combine(updaterTemp, "path.txt");
         }
         private void DelTemp()
         {
@@ -86,6 +80,7 @@ namespace MCParodyLauncherUpdater
                 Directory.Delete(mcplTempPath, true);
             }
         }
+
         private void DelInstaller()
         {
             if (File.Exists(installer))
@@ -93,54 +88,16 @@ namespace MCParodyLauncherUpdater
                 File.Delete(installer);
             }
         }
+
         private void CreateTemp()
         {
             Directory.CreateDirectory(mcplTempPath);
             Directory.CreateDirectory(installerDir);
         }
-        private void DumpVersion()
-        {
-            Directory.CreateDirectory(updaterTemp);
-
-            if (File.Exists(updaterVersionFile))
-            {
-                File.Delete(updaterVersionFile);
-            }
-            if (File.Exists(pathFile))
-            {
-                File.Delete(pathFile);
-            }
-
-            using (StreamWriter sw = File.CreateText(updaterVersionFile))
-            {
-                sw.WriteLine(updaterVersion);
-            }
-            using (StreamWriter sw = File.CreateText(pathFile))
-            {
-                sw.WriteLine(rootPath);
-            }
-        }
+        
         private void CheckForUpdates()
         {
             Status = UpdaterStatus.checking;
-
-            Version updaterLocalVersion = new Version(File.ReadAllText(updaterVersionFile));
-
-            try
-            {
-                WebClient webClient = new WebClient();
-                Version updaterOnlineVersion = new Version(webClient.DownloadString("https://raw.githubusercontent.com/KilLo445/mcpl-files/main/Updater/UpdaterVersion.txt"));
-
-                if (updaterOnlineVersion.IsDifferentThan(updaterLocalVersion))
-                {
-                    File.Delete(updaterVersionFile);
-                    InstallUpdate2();
-                }
-            }
-            catch
-            {
-
-            }
 
             if (File.Exists(launcherVersionFile))
             {
@@ -210,20 +167,8 @@ namespace MCParodyLauncherUpdater
             webClient.DownloadFileAsync(new Uri("https://github.com/KilLo445/MCParodyLauncher/releases/download/main/MinecraftParodyLauncher.zip"), installerZip);
         }
 
-        private void InstallUpdate2()
-        {
-            WebClient webClient = new WebClient();
-            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompletedCallback2);
-            webClient.DownloadFileAsync(new Uri("https://github.com/KilLo445/mcpl-files/raw/main/Updater/upgrader.exe"), upgrader);
-        }
-
         private void Window_ContentRendered(object sender, EventArgs e)
         {
-            DumpVersion();
-            if (File.Exists(upgrader))
-            {
-                File.Delete(upgrader);
-            }
             Status = UpdaterStatus.checking;
             CheckForUpdates();
         }
@@ -239,22 +184,7 @@ namespace MCParodyLauncherUpdater
             Process.Start(installer);
             Application.Current.Shutdown();
         }
-        private void DownloadCompletedCallback2(object sender, AsyncCompletedEventArgs e)
-        {
-            Process.Start(upgrader);
-            Application.Current.Shutdown();
-        }
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            if (Status == UpdaterStatus.downloading)
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                File.Delete(updaterVersionFile);
-            }
-        }
+
         private void NoUpdate()
         {
             Status = UpdaterStatus.noUpdate;
